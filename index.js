@@ -151,10 +151,6 @@ const animate = () => {
 
     context.clearRect(0, 0, canvas.width, canvas.height);
 
-    context.font = "10px Arial";
-    context.fillStyle = "white";
-    context.fillText(`Frame: ${frame}`, 10, 20);
-
     const garbageProjectiles = [];
     projectiles.forEach((p, index) => updateItem(p, index, canvas, context, garbageProjectiles));
     removeItems(projectiles, garbageProjectiles);
@@ -164,6 +160,11 @@ const animate = () => {
     removeItems(enemies, garbageEnemies);
 
     player.draw(context);
+
+    context.font = "10px Arial";
+    context.fillStyle = "white";
+    context.fillText(`Frame: ${frame}`, 10, 20);
+
     // requestAnimationFrame(animate);
 }
 
