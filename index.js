@@ -1,4 +1,5 @@
 var ready = false;
+var intervalId = undefined;
 var gameOver = false;
 var player = undefined;
 var canvas = undefined;
@@ -216,6 +217,7 @@ const animate = () => {
         context.fillStyle = "white";
         context.textAlign = "center";
         context.fillText("GAME OVER!", canvas.width/2, canvas.height/2);
+        clearInterval(intervalId);
     }
 
     // requestAnimationFrame(animate);
@@ -254,7 +256,7 @@ const initGame = () => {
     console.log(player);
     ready = true;
     
-    setInterval(interval, 20);
+    intervalId = setInterval(interval, 20);
 }
 
 const shoot = (event) => {
