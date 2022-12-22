@@ -5,6 +5,7 @@ var context = undefined;
 var projectiles = [];
 var enemies = [];
 var ticks = 0;
+var frame = 0;
 
 class Entity {
     draw(context) {
@@ -135,7 +136,13 @@ const updateItem = (item, index, canvas, context, garbageList) => {
 };
 
 const animate = () => {
+    frame += 1;
+
     context.clearRect(0, 0, canvas.width, canvas.height);
+
+    context.font = "10px Arial";
+    context.fillStyle = "white";
+    context.fillText(`Frame: ${frame}`, 10, 20);
 
     const garbageProjectiles = [];
     projectiles.forEach((p, index) => updateItem(p, index, canvas, context, garbageProjectiles));
