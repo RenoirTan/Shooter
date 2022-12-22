@@ -104,7 +104,9 @@ class Enemy extends DisposableEntity {
         if (this.radius < 20) {
             this.die();
         } else {
-            this.radius -= 10;
+            gsap.to(this, {
+                radius: this.radius-10
+            });
         }
     }
 
