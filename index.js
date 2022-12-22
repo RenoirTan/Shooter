@@ -99,19 +99,35 @@ const randInt = (low, high) => {
     return Math.floor(Math.random() * (high-low+1)) + low;
 }
 
-const spawnEnemies = () => {
+const spawnEnemy = () => {
+    const spawnEnemyHorizontal = (radius, velocity) => {
+        const y = randInt(1-radius, canvas.height+radius-1);
+        const x = (Math.random() > 0.5)
+            ? canvas.width+radius-1
+            : 1-radius;
+        const angle = calcAngle(x, y, player.x, player.y);
+        return new Enemy(x, y, radius, "green", velocity, angle);
+    };
+
+    const spawnEnemyVertical = (radius, velocity) => {
+        const x = randInt(1 - radius, canvas.width + radius - 1);
+        const y = (Math.random() > 0.5)
+            ? canvas.height + radius - 1
+            : 1 - radius;
+        const angle = calcAngle(x, y, player.x, player.y);
+        return new Enemy(x, y, radius, "green", velocity, angle);
+    };
+
     if (enemies.length >= 20) {
         return;
     }
-    const azimuth = (2*Math.random() - 1) * Math.PI; // angle in polar coordinates
-    const distance = Math.min(canvas.width, canvas.height) / 2;
-    const x = player.x + distance * Math.cos(azimuth);
-    const y = player.y + distance * Math.sin(azimuth);
-    const size = randInt(10, 50);
+    const radius = randInt(10, 50);
     const velocity = Math.random()/2 + 0.5;
-    const angle = calcAngle(x, y, player.x, player.y);
-    const enemy = new Enemy(x, y, size, "green", velocity, angle);
-    enemies.push(enemy);
+    enemies.push(
+        (Math.random() > 0.5)
+            ? spawnEnemyHorizontal(radius, velocity)
+            : spawnEnemyVertical(radius, velocity)
+    );
 }
 
 const removeItems = (list, garbageList) => {
@@ -163,7 +179,7 @@ const interval = () => {
     }
     animate();
     if (ticks === 0) {
-        spawnEnemies();
+        spawnEnemy();
         // report();
     }
     ticks += 1;
