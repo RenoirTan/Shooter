@@ -9,6 +9,7 @@ var projectiles = [];
 var enemies = [];
 var ticks = 0;
 var frame = 0;
+var score = 0;
 
 class Entity {
     draw(context) {
@@ -140,8 +141,10 @@ class Enemy extends DisposableEntity {
 
     hit() {
         if (this.radius < 20) {
+            score += Math.floor(this.radius);
             this.die();
         } else {
+            score += 10;
             gsap.to(this, {
                 radius: this.radius-10
             });
@@ -269,11 +272,6 @@ const animate = () => {
 
     player.draw(context);
 
-    context.font = "10px Arial";
-    context.fillStyle = "white";
-    context.textAligh = "left";
-    context.fillText(`Frame: ${frame}`, 10, 20);
-
     if (gameOver) {
         context.clearRect(0, 0, canvas.width, canvas.height);
         context.font = "64px Arial";
@@ -297,6 +295,8 @@ const interval = () => {
         ticks = 0;
     }
     animate();
+    $("#framecounter").html(`${frame}`);
+    $("#scorecounter").html(`${score}`);
     if (ticks === 0) {
         spawnEnemy();
         // report();
@@ -339,3 +339,13 @@ const main = () => {
 
 $(document).ready(main);
 $(window).click(shoot);
+$(window).keypress((event) => {
+    // spacebar
+    if (event.originalEvent.charCode === 32) {
+        if ($("#framecount").css("display") == "none") {
+            $("#framecount").show();
+        } else {
+            $("#framecount").hide();
+        }
+    }
+});
