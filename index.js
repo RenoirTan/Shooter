@@ -339,16 +339,16 @@ const initGame = () => {
     ready = true;
 
     $(window).click(shoot);
-    $(window).keypress((event) => {
+    window.onkeydown = (event) => {
         // spacebar
-        if (event.originalEvent.charCode === 32) {
+        if (event.keyCode === 32) {
             if ($("#framecount").css("display") == "none") {
                 $("#framecount").show();
             } else {
                 $("#framecount").hide();
             }
         }
-    });
+    };
     
     intervalId = setInterval(interval, 20);
 }
