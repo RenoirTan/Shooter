@@ -252,6 +252,8 @@ const animate = () => {
         }
         projectiles.forEach((p, pIndex) => {
             if (circleCollision(e.x-p.x, e.y-p.y, e.radius+p.radius) && !e.deadSinceFrame) {
+                console.log("hit");
+                console.log(p);
                 e.hit();
                 garbageProjectiles.push(pIndex);
             }
@@ -342,18 +344,6 @@ const initGame = () => {
 
     player = new Player(canvas.width/2, canvas.height/2, 30, "white");
     ready = true;
-
-    $(window).click(shoot);
-    window.onkeydown = (event) => {
-        // spacebar
-        if (event.keyCode === 32) {
-            if ($("#statsfornerds").css("display") == "none") {
-                $("#statsfornerds").show();
-            } else {
-                $("#statsfornerds").hide();
-            }
-        }
-    };
     
     intervalId = setInterval(interval, 20);
 };
@@ -384,3 +374,14 @@ const main = () => {
 };
 
 $(document).ready(main);
+$(window).click(shoot);
+window.onkeydown = (event) => {
+    // spacebar
+    if (event.keyCode === 32) {
+        if ($("#statsfornerds").css("display") == "none") {
+            $("#statsfornerds").show();
+        } else {
+            $("#statsfornerds").hide();
+        }
+    }
+};
