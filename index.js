@@ -214,7 +214,7 @@ const spawnEnemy = () => {
             ? spawnEnemyHorizontal(radius, velocity, color)
             : spawnEnemyVertical(radius, velocity, color)
     );
-}
+};
 
 const removeItems = (list, garbageList) => {
     let count = 0;
@@ -279,27 +279,32 @@ const animate = () => {
     }
 
     // requestAnimationFrame(animate);
-}
+};
+
+const enemySpawnChance = (score) => {
+    return Math.min(0.01 + (score/1000*0.01), 0.1)
+};
 
 const report = () => {
     console.log(
         `Number of projectiles: ${projectiles.length}\nNumber of enemies: ${enemies.length}`
     );
-}
+};
 
 const interval = () => {
     if (ticks === 50) {
         ticks = 0;
     }
     animate();
+    let esc = enemySpawnChance(score);
     $("#framecounter").html(`${frame}`);
+    $("#enemyspawnchance").html(`${esc}`);
     $("#scorecounter").html(`${score}`);
-    if (ticks === 0) {
+    if (Math.random() <= esc) {
         spawnEnemy();
-        // report();
     }
     ticks += 1;
-}
+};
 
 const resetGameState = () => {
     ready = false;
@@ -314,12 +319,12 @@ const resetGameState = () => {
     ticks = 0;
     frame = 0;
     score = 0;
-}
+};
 
 const initCanvas = (canvas) => {
     canvas.width = innerWidth;
     canvas.height = innerHeight;
-}
+};
 
 const initGame = () => {
     console.log("initGame() called");
@@ -342,16 +347,16 @@ const initGame = () => {
     window.onkeydown = (event) => {
         // spacebar
         if (event.keyCode === 32) {
-            if ($("#framecount").css("display") == "none") {
-                $("#framecount").show();
+            if ($("#statsfornerds").css("display") == "none") {
+                $("#statsfornerds").show();
             } else {
-                $("#framecount").hide();
+                $("#statsfornerds").hide();
             }
         }
     };
     
     intervalId = setInterval(interval, 20);
-}
+};
 
 const doGameOver = () => {
     clearInterval(intervalId);
@@ -359,7 +364,7 @@ const doGameOver = () => {
     $("#startgame").show();
     $("#bigscorecounter").html(`${score}`);
     $("#scorecount").hide();
-}
+};
 
 const shoot = (event) => {
     if (!ready) {
@@ -371,11 +376,11 @@ const shoot = (event) => {
     const angle = calcAngle(player.x, player.y, mouseX, mouseY);
     const projectile = new Projectile(player.x, player.y, 5, "white", 5, angle);
     projectiles.push(projectile);
-}
+};
 
 const main = () => {
     console.log("index.js loaded");
     $("#startbutton").click(initGame);
-}
+};
 
 $(document).ready(main);
