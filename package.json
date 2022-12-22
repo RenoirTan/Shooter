@@ -1,0 +1,22 @@
+{
+  "name": "shooter",
+  "version": "1.0.0",
+  "description": "no",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RenoirTan/Shooter.git"
+  },
+  "author": "RenoirTan",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/RenoirTan/Shooter/issues"
+  },
+  "homepage": "https://github.com/RenoirTan/Shooter",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
