@@ -19,7 +19,10 @@ class Entity {
 
 class DisposableEntity extends Entity {
     isGarbage(canvas) {
-        console.error("DisposableEntity.isGarbage(canvas) unimplemented");
+        return this.x < -this.radius
+            || this.y < -this.radius
+            || this.x > canvas.width + this.radius
+            || this.y > canvas.height + this.radius;
     }
 }
 
@@ -62,10 +65,6 @@ class Projectile extends DisposableEntity {
         this.x += Math.cos(this.angle) * this.velocity;
         this.y += Math.sin(this.angle) * this.velocity;
     }
-
-    isGarbage(canvas) {
-        return this.x < 0 || this.y < 0 || this.x > canvas.width || this.y > canvas.height;
-    }
 }
 
 class Enemy extends DisposableEntity {
@@ -89,10 +88,6 @@ class Enemy extends DisposableEntity {
     update() {
         this.x += Math.cos(this.angle) * this.velocity;
         this.y += Math.sin(this.angle) * this.velocity;
-    }
-
-    isGarbage(canvas) {
-        return this.x < 0 || this.y < 0 || this.x > canvas.width || this.y > canvas.height;
     }
 }
 
