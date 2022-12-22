@@ -4,6 +4,7 @@ var gameOver = false;
 var player = undefined;
 var canvas = undefined;
 var context = undefined;
+var particles = [];
 var projectiles = [];
 var enemies = [];
 var ticks = 0;
@@ -25,6 +26,44 @@ class DisposableEntity extends Entity {
             || this.y < -this.radius
             || this.x > canvas.width + this.radius
             || this.y > canvas.height + this.radius;
+    }
+}
+
+class Particle extends DisposableEntity {
+    constructor(x, y, radius, color, velocity, angle) {
+        super();
+        this.x = x;
+        this.y = y;
+        this.radius = radius;
+        this.color = color;
+        this.style = `hsl(${this.color}, 80%, 80%)`;
+        this.alpha = 1;
+        this.velocity = velocity;
+        this.angle = angle;
+        this.aliveSinceFrame = frame;
+    }
+
+    draw(context) {
+        context.save();
+        context.globalAlpha = this.alpha;
+        context.beginPath();
+        context.arc(this.x, this.y, this.radius, 0, 2 * Math.PI, false);
+        context.fillStyle = this.style;
+        context.fill();
+        context.restore();
+    }
+
+    update() {
+        this.x += Math.cos(this.angle) * this.velocity;
+        this.y += Math.sin(this.angle) * this.velocity;
+        gsap.to(this, {
+            velocity: this.velocity*0.6,
+            alpha: this.alpha*0.5
+        });
+    }
+
+    isGarbage(canvas) {
+        return super.isGarbage(canvas) || (frame-this.aliveSinceFrame) > 25;
     }
 }
 
@@ -92,7 +131,6 @@ class Enemy extends DisposableEntity {
     update() {
         this.x += Math.cos(this.angle) * this.velocity;
         this.y += Math.sin(this.angle) * this.velocity;
-
     }
 
     isGarbage(canvas) {
@@ -107,6 +145,17 @@ class Enemy extends DisposableEntity {
             gsap.to(this, {
                 radius: this.radius-10
             });
+        }
+        for (let i = 0; i < randInt(5, 10)*this.radius/10; i++) {
+            const particle = new Particle(
+                this.x,
+                this.y,
+                Math.random()*this.radius/10 + 2,
+                this.color,
+                10,
+                (2*Math.random()-1) * Math.PI
+            );
+            particles.push(particle);
         }
     }
 
@@ -184,6 +233,7 @@ const animate = () => {
     context.fillStyle = "rgba(0, 0, 0, 0.1)";
     context.fillRect(0, 0, canvas.width, canvas.height);
 
+    const garbageParticles = [];
     const garbageProjectiles = [];
     const garbageEnemies = [];
 
@@ -213,6 +263,9 @@ const animate = () => {
 
     projectiles.forEach((p, index) => updateItem(p, index, canvas, context, garbageProjectiles));
     removeItems(projectiles, garbageProjectiles);
+
+    particles.forEach((p, index) => updateItem(p, index, canvas, context, garbageParticles));
+    removeItems(particles, garbageParticles);
 
     player.draw(context);
 
