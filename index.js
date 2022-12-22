@@ -96,7 +96,7 @@ class Enemy extends DisposableEntity {
 
     isGarbage(canvas) {
         return super.isGarbage(canvas)
-            || (this.deadSinceFrame && frame-this.deadSinceFrame >= 50);
+            || (this.deadSinceFrame && frame-this.deadSinceFrame > 1);
     }
 
     die() {
@@ -169,7 +169,8 @@ const updateItem = (item, index, canvas, context, garbageList) => {
 const animate = () => {
     frame += 1;
 
-    context.clearRect(0, 0, canvas.width, canvas.height);
+    context.fillStyle = "rgba(0, 0, 0, 0.1)";
+    context.fillRect(0, 0, canvas.width, canvas.height);
 
     const garbageProjectiles = [];
     const garbageEnemies = [];
@@ -189,13 +190,9 @@ const animate = () => {
             }
         });
     });
-    const drawUpdate = (item) => {
-        item.draw(context);
-        item.update();
-    };
-    enemies.filter(e => e.deadSinceFrame).forEach(drawUpdate);
-    enemies.filter(e => !e.deadSinceFrame).forEach(drawUpdate);
     enemies.forEach((e, index) => {
+        e.draw(context);
+        e.update();
         if (e.isGarbage(canvas)) {
             garbageEnemies.push(index);
         }
@@ -213,8 +210,9 @@ const animate = () => {
     context.fillText(`Frame: ${frame}`, 10, 20);
 
     if (gameOver) {
+        context.clearRect(0, 0, canvas.width, canvas.height);
         context.font = "64px Arial";
-        context.fillStyle = "white";
+        context.fillStyle = "gray";
         context.textAlign = "center";
         context.fillText("GAME OVER!", canvas.width/2, canvas.height/2);
         clearInterval(intervalId);
@@ -249,11 +247,9 @@ const initCanvas = (canvas) => {
 const initGame = () => {
     canvas = $("#gamecanvas").get(0);
     initCanvas(canvas);
-    console.log(canvas);
     context = canvas.getContext("2d");
 
-    player = new Player(canvas.width/2, canvas.height/2, 30, "blue");
-    console.log(player);
+    player = new Player(canvas.width/2, canvas.height/2, 30, "white");
     ready = true;
     
     intervalId = setInterval(interval, 20);
@@ -267,7 +263,7 @@ const shoot = (event) => {
     const mouseX = event.clientX;
     const mouseY = event.clientY;
     const angle = calcAngle(player.x, player.y, mouseX, mouseY);
-    const projectile = new Projectile(player.x, player.y, 5, "red", 5, angle);
+    const projectile = new Projectile(player.x, player.y, 5, "white", 5, angle);
     projectiles.push(projectile);
 }
 
