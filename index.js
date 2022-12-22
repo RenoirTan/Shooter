@@ -252,8 +252,6 @@ const animate = () => {
         }
         projectiles.forEach((p, pIndex) => {
             if (circleCollision(e.x-p.x, e.y-p.y, e.radius+p.radius) && !e.deadSinceFrame) {
-                console.log("hit");
-                console.log(p);
                 e.hit();
                 garbageProjectiles.push(pIndex);
             }
