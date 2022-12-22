@@ -273,12 +273,7 @@ const animate = () => {
     player.draw(context);
 
     if (gameOver) {
-        context.clearRect(0, 0, canvas.width, canvas.height);
-        context.font = "64px Arial";
-        context.fillStyle = "white";
-        context.textAlign = "center";
-        context.fillText("GAME OVER!", canvas.width/2, canvas.height/2);
-        clearInterval(intervalId);
+        doGameOver();
     }
 
     // requestAnimationFrame(animate);
@@ -304,20 +299,64 @@ const interval = () => {
     ticks += 1;
 }
 
+const resetGameState = () => {
+    ready = false;
+    intervalId = undefined;
+    gameOver = false;
+    player = undefined;
+    canvas = undefined;
+    context = undefined;
+    particles = [];
+    projectiles = [];
+    enemies = [];
+    ticks = 0;
+    frame = 0;
+    score = 0;
+}
+
 const initCanvas = (canvas) => {
     canvas.width = innerWidth;
     canvas.height = innerHeight;
 }
 
 const initGame = () => {
+    console.log("initGame() called");
+
+    resetGameState();
+
+    $("#startgame").hide();
+    $("#data").show();
+    $("#scorecounter").html("0");
+    $("#scorecount").show();
+
     canvas = $("#gamecanvas").get(0);
     initCanvas(canvas);
     context = canvas.getContext("2d");
 
     player = new Player(canvas.width/2, canvas.height/2, 30, "white");
     ready = true;
+
+    $(window).click(shoot);
+    $(window).keypress((event) => {
+        // spacebar
+        if (event.originalEvent.charCode === 32) {
+            if ($("#framecount").css("display") == "none") {
+                $("#framecount").show();
+            } else {
+                $("#framecount").hide();
+            }
+        }
+    });
     
     intervalId = setInterval(interval, 20);
+}
+
+const doGameOver = () => {
+    clearInterval(intervalId);
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    $("#startgame").show();
+    $("#bigscorecounter").html(`${score}`);
+    $("#scorecount").hide();
 }
 
 const shoot = (event) => {
@@ -334,18 +373,7 @@ const shoot = (event) => {
 
 const main = () => {
     console.log("index.js loaded");
-    initGame();
+    $("#startbutton").click(initGame);
 }
 
 $(document).ready(main);
-$(window).click(shoot);
-$(window).keypress((event) => {
-    // spacebar
-    if (event.originalEvent.charCode === 32) {
-        if ($("#framecount").css("display") == "none") {
-            $("#framecount").show();
-        } else {
-            $("#framecount").hide();
-        }
-    }
-});
