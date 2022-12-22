@@ -115,6 +115,7 @@ class Enemy extends DisposableEntity {
         this.x = x;
         this.y = y;
         this.radius = radius;
+        this.health = radius;
         this.color = color;
         this.style = `hsl(${this.color}, 50%, 50%)`
         this.velocity = velocity;
@@ -140,13 +141,14 @@ class Enemy extends DisposableEntity {
     }
 
     hit() {
-        if (this.radius < 20) {
-            score += Math.floor(this.radius);
+        if (this.health < 20) {
+            score += Math.floor(this.health);
             this.die();
         } else {
             score += 10;
+            this.health -= 10;
             gsap.to(this, {
-                radius: this.radius-10
+                radius: this.health
             });
         }
         for (let i = 0; i < randInt(5, 10)*this.radius/10; i++) {
