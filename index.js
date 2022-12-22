@@ -76,6 +76,7 @@ class Enemy extends DisposableEntity {
         this.y = y;
         this.radius = radius;
         this.color = color;
+        this.style = `hsl(${this.color}, 50%, 50%)`
         this.velocity = velocity;
         this.angle = angle;
         this.deadSinceFrame = null;
@@ -84,7 +85,7 @@ class Enemy extends DisposableEntity {
     draw(context) {
         context.beginPath();
         context.arc(this.x, this.y, this.radius, 0, 2 * Math.PI, false);
-        context.fillStyle = this.color;
+        context.fillStyle = this.style;
         context.fill();
     }
 
@@ -99,8 +100,16 @@ class Enemy extends DisposableEntity {
             || (this.deadSinceFrame && frame-this.deadSinceFrame > 1);
     }
 
+    hit() {
+        if (this.radius < 20) {
+            this.die();
+        } else {
+            this.radius -= 10;
+        }
+    }
+
     die() {
-        this.color = "purple";
+        this.style = `hsl(${this.color}, 20%, 50%)`;
         this.velocity = 0.1;
         this.deadSinceFrame = frame;
     }
@@ -120,22 +129,22 @@ const circleCollision = (xDiff, yDiff, radiusTotal) => {
 };
 
 const spawnEnemy = () => {
-    const spawnEnemyHorizontal = (radius, velocity) => {
+    const spawnEnemyHorizontal = (radius, velocity, color) => {
         const y = randInt(1-radius, canvas.height+radius-1);
         const x = (Math.random() > 0.5)
             ? canvas.width+radius-1
             : 1-radius;
         const angle = calcAngle(x, y, player.x, player.y);
-        return new Enemy(x, y, radius, "green", velocity, angle);
+        return new Enemy(x, y, radius, color, velocity, angle);
     };
 
-    const spawnEnemyVertical = (radius, velocity) => {
+    const spawnEnemyVertical = (radius, velocity, color) => {
         const x = randInt(1 - radius, canvas.width + radius - 1);
         const y = (Math.random() > 0.5)
             ? canvas.height + radius - 1
             : 1 - radius;
         const angle = calcAngle(x, y, player.x, player.y);
-        return new Enemy(x, y, radius, "green", velocity, angle);
+        return new Enemy(x, y, radius, color, velocity, angle);
     };
 
     if (enemies.length >= 20) {
@@ -143,10 +152,11 @@ const spawnEnemy = () => {
     }
     const radius = randInt(10, 50);
     const velocity = Math.random()/2 + 0.5;
+    const color = randInt(0, 359);
     enemies.push(
         (Math.random() > 0.5)
-            ? spawnEnemyHorizontal(radius, velocity)
-            : spawnEnemyVertical(radius, velocity)
+            ? spawnEnemyHorizontal(radius, velocity, color)
+            : spawnEnemyVertical(radius, velocity, color)
     );
 }
 
@@ -185,7 +195,7 @@ const animate = () => {
         }
         projectiles.forEach((p, pIndex) => {
             if (circleCollision(e.x-p.x, e.y-p.y, e.radius+p.radius) && !e.deadSinceFrame) {
-                e.die();
+                e.hit();
                 garbageProjectiles.push(pIndex);
             }
         });
@@ -212,7 +222,7 @@ const animate = () => {
     if (gameOver) {
         context.clearRect(0, 0, canvas.width, canvas.height);
         context.font = "64px Arial";
-        context.fillStyle = "gray";
+        context.fillStyle = "white";
         context.textAlign = "center";
         context.fillText("GAME OVER!", canvas.width/2, canvas.height/2);
         clearInterval(intervalId);
