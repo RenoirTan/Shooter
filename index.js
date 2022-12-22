@@ -1,4 +1,5 @@
 var ready = false;
+var gameOver = false;
 var player = undefined;
 var canvas = undefined;
 var context = undefined;
@@ -174,6 +175,12 @@ const animate = () => {
 
     // detect collision with projectile
     enemies.forEach((e) => {
+        if (
+            circleCollision(player.x-e.x, player.y-e.y, player.radius+e.radius)
+            && !e.deadSinceFrame
+        ) {
+            gameOver = true;
+        }
         projectiles.forEach((p, pIndex) => {
             if (circleCollision(e.x-p.x, e.y-p.y, e.radius+p.radius) && !e.deadSinceFrame) {
                 e.die();
@@ -201,7 +208,15 @@ const animate = () => {
 
     context.font = "10px Arial";
     context.fillStyle = "white";
+    context.textAligh = "left";
     context.fillText(`Frame: ${frame}`, 10, 20);
+
+    if (gameOver) {
+        context.font = "64px Arial";
+        context.fillStyle = "white";
+        context.textAlign = "center";
+        context.fillText("GAME OVER!", canvas.width/2, canvas.height/2);
+    }
 
     // requestAnimationFrame(animate);
 }
@@ -256,7 +271,6 @@ const shoot = (event) => {
 
 const main = () => {
     console.log("index.js loaded");
-    ready = true;
     initGame();
 }
 
