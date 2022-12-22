@@ -76,6 +76,7 @@ class Enemy extends DisposableEntity {
         this.color = color;
         this.velocity = velocity;
         this.angle = angle;
+        this.deadSinceFrame = null;
     }
 
     draw(context) {
@@ -88,16 +89,33 @@ class Enemy extends DisposableEntity {
     update() {
         this.x += Math.cos(this.angle) * this.velocity;
         this.y += Math.sin(this.angle) * this.velocity;
+
+    }
+
+    isGarbage(canvas) {
+        return super.isGarbage(canvas)
+            || (this.deadSinceFrame && frame-this.deadSinceFrame >= 50);
+    }
+
+    die() {
+        this.color = "purple";
+        this.velocity = 0.1;
+        this.deadSinceFrame = frame;
     }
 }
 
 const calcAngle = (x1, y1, x2, y2) => {
     return Math.atan2(y2-y1, x2-x1)
-}
+};
 
 const randInt = (low, high) => {
     return Math.floor(Math.random() * (high-low+1)) + low;
-}
+};
+
+const circleCollision = (xDiff, yDiff, radiusTotal) => {
+    // shitty pythagoras
+    return (xDiff*xDiff + yDiff*yDiff) <= radiusTotal*radiusTotal;
+};
 
 const spawnEnemy = () => {
     const spawnEnemyHorizontal = (radius, velocity) => {
@@ -152,12 +170,32 @@ const animate = () => {
     context.clearRect(0, 0, canvas.width, canvas.height);
 
     const garbageProjectiles = [];
+    const garbageEnemies = [];
+
+    // detect collision with projectile
+    enemies.forEach((e) => {
+        projectiles.forEach((p, pIndex) => {
+            if (circleCollision(e.x-p.x, e.y-p.y, e.radius+p.radius) && !e.deadSinceFrame) {
+                e.die();
+                garbageProjectiles.push(pIndex);
+            }
+        });
+    });
+    const drawUpdate = (item) => {
+        item.draw(context);
+        item.update();
+    };
+    enemies.filter(e => e.deadSinceFrame).forEach(drawUpdate);
+    enemies.filter(e => !e.deadSinceFrame).forEach(drawUpdate);
+    enemies.forEach((e, index) => {
+        if (e.isGarbage(canvas)) {
+            garbageEnemies.push(index);
+        }
+    });
+    removeItems(enemies, garbageEnemies);
+
     projectiles.forEach((p, index) => updateItem(p, index, canvas, context, garbageProjectiles));
     removeItems(projectiles, garbageProjectiles);
-
-    const garbageEnemies = [];
-    enemies.forEach((e, index) => updateItem(e, index, canvas, context, garbageEnemies));
-    removeItems(enemies, garbageEnemies);
 
     player.draw(context);
 
